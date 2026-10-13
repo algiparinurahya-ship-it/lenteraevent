@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lantera Event — Event Organizer Tasikmalaya</title>
+<meta name="description" content="Lantera Event: perencanaan dan pelaksanaan konser, workshop, pameran, dan pernikahan.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏮</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1b1f4b;--paper:#eef2f6;--card:#fff;--saffron:#f2b705;--rose:#d6336c;--muted:#5a6078;--line:#d5dbe6;
+--display:'Bricolage Grotesque',Georgia,serif;--body:'Instrument Sans',system-ui,sans-serif}
+@media(prefers-color-scheme:dark){:root{--ink:#e8eaff;--paper:#12142b;--card:#1c2040;--muted:#a3a9c9;--line:#2e335c}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:var(--body);background:var(--paper);color:var(--ink);line-height:1.6}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--saffron);outline-offset:2px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+header{display:flex;justify-content:space-between;align-items:center;padding:18px 0}
+.brand{font:800 1.3rem var(--display);text-decoration:none}
+nav{display:flex;gap:20px;font-weight:500}
+nav a{text-decoration:none}
+nav a:hover{text-decoration:underline}
+.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:40px;align-items:center;padding:48px 0 72px}
+.hero h1{font:800 clamp(2.2rem,5.5vw,4rem)/1.05 var(--display);margin:0 0 18px;letter-spacing:-.02em}
+.hero p{font-size:1.1rem;color:var(--muted);max-width:46ch;margin:0 0 26px}
+.btn{display:inline-block;border:0;border-radius:10px;padding:12px 20px;font:600 1rem var(--body);cursor:pointer;background:var(--ink);color:var(--paper);text-decoration:none}
+.btn:hover{opacity:.9}
+.btn.alt{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.btn.sm{padding:8px 14px;font-size:.9rem}
+.btn.danger{background:var(--rose);color:#fff}
+.stub{background:var(--saffron);color:#1b1f4b;border-radius:16px;padding:26px 26px 26px 34px;position:relative;transform:rotate(2deg);
+ -webkit-mask:radial-gradient(circle 12px at 0 50%,#0000 98%,#000) ;mask:radial-gradient(circle 12px at 0 50%,#0000 98%,#000)}
+.stub small{font-weight:600}
+.stub h2{font:800 1.6rem/1.15 var(--display);margin:6px 0 10px}
+.stub .big{font:800 3rem/1 var(--display)}
+section{padding:56px 0}
+h2.sec{font:800 clamp(1.7rem,3.5vw,2.4rem) var(--display);margin:0 0 6px;letter-spacing:-.01em}
+.sub{color:var(--muted);margin:0 0 24px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.chip{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer;font:500 .95rem var(--body)}
+.chip[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.ev{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:8px}
+.ev .cat{color:var(--rose);font-weight:600;font-size:.9rem}
+.ev h3{font:700 1.3rem/1.2 var(--display);margin:0}
+.ev p{margin:0;color:var(--muted);flex:1}
+.ev .meta{font-size:.95rem}
+.ev .foot{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.price{font:700 1.1rem var(--display)}
+.empty{padding:30px;border:2px dashed var(--line);border-radius:14px;color:var(--muted)}
+.services{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:28px}
+.services h3{font:700 1.2rem var(--display);margin:0 0 6px}
+.services p{margin:0;color:var(--muted)}
+footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+dialog{border:0;border-radius:16px;padding:26px;width:min(520px,92vw);background:var(--card);color:var(--ink)}
+dialog.wide{width:min(900px,95vw)}
+dialog::backdrop{background:#0008}
+label{display:block;font-weight:600;font-size:.92rem;margin:12px 0 4px}
+input,select,textarea{width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;font:1rem var(--body);background:var(--paper);color:var(--ink)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.msg{margin:12px 0 0;font-weight:500}
+.msg.err{color:var(--rose)}
+.msg.ok{color:#1a7f4b}
+.actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{text-align:left;padding:8px;border-bottom:1px solid var(--line)}
+.tbl{overflow-x:auto}
+@media(max-width:760px){.hero{grid-template-columns:1fr}.stub{transform:none}.row{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="#">🏮 Lantera Event</a>
+    <nav><a href="#acara">Acara</a><a href="#layanan">Layanan</a><a href="#kontak">Kontak</a></nav>
+  </header>
+
+  <div class="hero">
+    <div>
+      <h1>Kami yang repot, Anda yang menikmati harinya.</h1>
+      <p>Dari konser kecil sampai pameran besar, tim Lantera Event menangani izin, panggung, vendor, hingga tiket masuk.</p>
+      <a class="btn" href="#acara">Lihat acara mendatang</a>
+      <a class="btn alt" href="#kontak">Sewa kami</a>
+    </div>
+    <div class="stub" id="stub" aria-live="polite">
+      <small>Acara terdekat</small>
+      <h2>Memuat…</h2>
+    </div>
+  </div>
+
+  <section id="acara">
+    <h2 class="sec">Acara mendatang</h2>
+    <p class="sub">Pilih acara, isi data, dan tiket Anda kami kirim lewat email.</p>
+    <div class="chips" id="chips"></div>
+    <div class="grid" id="events"></div>
+  </section>
+
+  <section id="layanan">
+    <h2 class="sec">Yang bisa kami kerjakan</h2>
+    <p class="sub">Satu tim, dari rencana sampai bongkar panggung.</p>
+    <div class="services">
+      <div><h3>Konser dan festival</h3><p>Panggung, tata suara, keamanan, dan penjualan tiket online.</p></div>
+      <div><h3>Workshop dan seminar</h3><p>Venue, narasumber, peserta, sertifikat, dan dokumentasi.</p></div>
+      <div><h3>Pernikahan dan perayaan</h3><p>Dekorasi, katering, rundown, dan koordinator hari-H.</p></div>
+    </div>
+  </section>
+
+  <section id="kontak">
+    <h2 class="sec">Rencanakan acara Anda</h2>
+    <p class="sub">Ceritakan tanggal, jumlah tamu, dan anggaran. Kami balas hari yang sama.</p>
+    <a class="btn" id="wa" target="_blank" rel="noopener" href="#">Chat WhatsApp</a>
+  </section>
+
+  <footer>
+    <span>© <span id="yr"></span> Lantera Event, Tasikmalaya</span>
+    <a href="#admin" id="adminLink">Masuk admin</a>
+  </footer>
+</div>
+
+<!-- Dialog pendaftaran -->
+<dialog id="regDlg">
+  <form id="regForm">
+    <h2 style="font:800 1.4rem var(--display);margin:0" id="regTitle">Daftar</h2>
+    <label for="rName">Nama lengkap</label><input id="rName" required minlength="2" maxlength="100" autocomplete="name">
+    <label for="rEmail">Email</label><input id="rEmail" type="email" required autocomplete="email">
+    <div class="row">
+      <div><label for="rPhone">Nomor WhatsApp</label><input id="rPhone" type="tel" required minlength="8" maxlength="20" autocomplete="tel"></div>
+      <div><label for="rTix">Jumlah tiket</label><input id="rTix" type="number" min="1" max="10" value="1" required></div>
+    </div>
+    <p class="msg" id="regMsg" role="status"></p>
+    <div class="actions"><button class="btn" type="submit" id="regBtn">Kirim pendaftaran</button><button class="btn alt" type="button" data-close>Tutup</button></div>
+  </form>
+</dialog>
+
+<!-- Dialog admin -->
+<dialog id="admDlg" class="wide">
+  <div id="loginBox">
+    <h2 style="font:800 1.4rem var(--display);margin:0">Masuk admin</h2>
+    <form id="loginForm">
+      <label for="aEmail">Email</label><input id="aEmail" type="email" required autocomplete="username">
+      <label for="aPass">Kata sandi</label><input id="aPass" type="password" required autocomplete="current-password">
+      <p class="msg" id="loginMsg" role="status"></p>
+      <div class="actions"><button class="btn" type="submit">Masuk</button><button class="btn alt" type="button" data-close>Tutup</button></div>
+    </form>
+  </div>
+  <div id="panel" hidden>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+      <h2 style="font:800 1.4rem var(--display);margin:0">Panel admin</h2>
+      <div class="actions" style="margin:0"><button class="btn alt sm" id="logout">Keluar</button><button class="btn alt sm" data-close>Tutup</button></div>
+    </div>
+    <h3>Tambah acara</h3>
+    <form id="addForm">
+      <div class="row">
+        <div><label for="eTitle">Nama acara</label><input id="eTitle" required></div>
+        <div><label for="eCat">Kategori</label>
+          <select id="eCat"><option>Konser</option><option>Workshop</option><option>Pameran</option><option>Pernikahan</option><option>Lainnya</option></select></div>
+      </div>
+      <div class="row">
+        <div><label for="eDate">Tanggal</label><input id="eDate" type="date" required></div>
+        <div><label for="eLoc">Lokasi</label><input id="eLoc" required></div>
+      </div>
+      <div class="row">
+        <div><label for="ePrice">Harga tiket (Rp, 0 = gratis)</label><input id="ePrice" type="number" min="0" value="0" required></div>
+        <div><label for="eQuota">Kuota</label><input id="eQuota" type="number" min="1" value="100" required></div>
+      </div>
+      <label for="eDesc">Deskripsi</label><textarea id="eDesc" rows="3"></textarea>
+      <p class="msg" id="addMsg" role="status"></p>
+      <div class="actions"><button class="btn" type="submit">Simpan acara</button></div>
+    </form>
+    <h3>Acara</h3><div class="tbl"><table><thead><tr><th>Acara</th><th>Tanggal</th><th>Terbit</th><th></th></tr></thead><tbody id="admEvents"></tbody></table></div>
+    <h3>Pendaftar</h3><div class="tbl"><table><thead><tr><th>Acara</th><th>Nama</th><th>Email</th><th>WhatsApp</th><th>Tiket</th></tr></thead><tbody id="admRegs"></tbody></table></div>
+  </div>
+</dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+/* ====== GANTI 3 NILAI INI ====== */
+const SUPABASE_URL = 'https://XXXXXXXX.supabase.co';
+const SUPABASE_ANON_KEY = 'ISI_DENGAN_ANON_PUBLIC_KEY';
+const WHATSAPP = '6281234567890'; // format internasional tanpa +
+/* =============================== */
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const $ = id => document.getElementById(id);
+const rupiah = n => n > 0 ? 'Rp ' + Number(n).toLocaleString('id-ID') : 'Gratis';
+const tgl = d => new Date(d + 'T00:00:00').toLocaleDateString('id-ID', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+const el = (tag, props = {}, ...kids) => {
+  const n = Object.assign(document.createElement(tag), props);
+  kids.forEach(k => n.append(k));
+  return n;
+};
+let events = [], filter = 'Semua';
+
+$('yr').textContent = new Date().getFullYear();
+$('wa').href = 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent('Halo Lantera Event, saya ingin konsultasi acara.');
+
+document.addEventListener('click', e => { if (e.target.closest('[data-close]')) e.target.closest('dialog').close(); });
+
+/* ---------- Publik ---------- */
+async function loadEvents() {
+  const today = new Date().toISOString().slice(0, 10);
+  const { data, error } = await sb.from('events').select('*').eq('published', true).gte('event_date', today).order('event_date');
+  if (error) { $('events').replaceChildren(el('div', {className:'empty', textContent:'Acara belum bisa dimuat. Periksa konfigurasi Supabase.'})); return; }
+  events = data;
+  renderStub(); renderChips(); renderEvents();
+}
+function renderStub() {
+  const s = $('stub'), e = events[0];
+  s.replaceChildren(el('small', {textContent:'Acara terdekat'}));
+  if (!e) { s.append(el('h2', {textContent:'Jadwal baru segera hadir'})); return; }
+  const d = new Date(e.event_date + 'T00:00:00');
+  s.append(
+    el('div', {className:'big', textContent: d.getDate() + ' ' + d.toLocaleDateString('id-ID', {month:'short'})}),
+    el('h2', {textContent:e.title}),
+    el('div', {textContent:e.location})
+  );
+}
+function renderChips() {
+  const cats = ['Semua', ...new Set(events.map(e => e.category))];
+  $('chips').replaceChildren(...cats.map(c => {
+    const b = el('button', {className:'chip', textContent:c, type:'button'});
+    b.setAttribute('aria-pressed', c === filter);
+    b.onclick = () => { filter = c; renderChips(); renderEvents(); };
+    return b;
+  }));
+}
+function renderEvents() {
+  const list = events.filter(e => filter === 'Semua' || e.category === filter);
+  if (!list.length) { $('events').replaceChildren(el('div', {className:'empty', textContent:'Belum ada acara di kategori ini. Cek lagi minggu depan atau hubungi kami.'})); return; }
+  $('events').replaceChildren(...list.map(e => {
+    const btn = el('button', {className:'btn sm', type:'button', textContent:'Daftar'});
+    btn.onclick = () => openReg(e);
+    return el('article', {className:'ev'},
+      el('span', {className:'cat', textContent:e.category}),
+      el('h3', {textContent:e.title}),
+      el('div', {className:'meta', textContent: tgl(e.event_date) + ', ' + e.location}),
+      el('p', {textContent:e.description || ''}),
+      el('div', {className:'foot'}, el('span', {className:'price', textContent:rupiah(e.price)}), btn)
+    );
+  }));
+}
+let activeEvent = null;
+function openReg(e) {
+  activeEvent = e;
+  $('regTitle').textContent = 'Daftar: ' + e.title;
+  $('regMsg').textContent = ''; $('regMsg').className = 'msg';
+  $('regDlg').showModal();
+}
+$('regForm').addEventListener('submit', async ev => {
+  ev.preventDefault();
+  const btn = $('regBtn'); btn.disabled = true;
+  const { error } = await sb.from('registrations').insert({
+    event_id: activeEvent.id, name: $('rName').value.trim(), email: $('rEmail').value.trim(),
+    phone: $('rPhone').value.trim(), tickets: +$('rTix').value
+  });
+  btn.disabled = false;
+  const m = $('regMsg');
+  if (error) { m.className = 'msg err'; m.textContent = 'Pendaftaran gagal. Periksa data Anda lalu coba lagi.'; return; }
+  m.className = 'msg ok'; m.textContent = 'Terima kasih! Pendaftaran Anda tercatat. Kami hubungi lewat WhatsApp.';
+  $('regForm').reset();
+});
+
+/* ---------- Admin ---------- */
+async function showAdmin() {
+  const { data: { session } } = await sb.auth.getSession();
+  $('loginBox').hidden = !!session; $('panel').hidden = !session;
+  if (session) loadAdmin();
+  if (!$('admDlg').open) $('admDlg').showModal();
+}
+async function loadAdmin() {
+  const [ev, rg] = await Promise.all([
+    sb.from('events').select('*').order('event_date', {ascending:false}),
+    sb.from('registrations').select('*, events(title)').order('created_at', {ascending:false})
+  ]);
+  $('admEvents').replaceChildren(...(ev.data || []).map(e => {
+    const tog = el('button', {className:'btn alt sm', textContent: e.published ? 'Sembunyikan' : 'Terbitkan'});
+    tog.onclick = async () => { await sb.from('events').update({published: !e.published}).eq('id', e.id); loadAdmin(); loadEvents(); };
+    const del = el('button', {className:'btn danger sm', textContent:'Hapus'});
+    del.onclick = async () => { if (confirm('Hapus acara dan semua pendaftarnya?')) { await sb.from('events').delete().eq('id', e.id); loadAdmin(); loadEvents(); } };
+    return el('tr', {}, el('td', {textContent:e.title}), el('td', {textContent:e.event_date}), el('td', {textContent:e.published ? 'Ya' : 'Tidak'}),
+      el('td', {}, tog, ' ', del));
+  }));
+  $('admRegs').replaceChildren(...(rg.data || []).map(r =>
+    el('tr', {}, el('td', {textContent:r.events?.title || '-'}), el('td', {textContent:r.name}), el('td', {textContent:r.email}), el('td', {textContent:r.phone}), el('td', {textContent:r.tickets}))
+  ));
+}
+$('adminLink').onclick = e => { e.preventDefault(); showAdmin(); };
+$('loginForm').addEventListener('submit', async ev => {
+  ev.preventDefault();
+  const { error } = await sb.auth.signInWithPassword({ email: $('aEmail').value, password: $('aPass').value });
+  if (error) { $('loginMsg').className = 'msg err'; $('loginMsg').textContent = 'Email atau kata sandi salah.'; return; }
+  showAdmin();
+});
+$('logout').onclick = async () => { await sb.auth.signOut(); showAdmin(); };
+$('addForm').addEventListener('submit', async ev => {
+  ev.preventDefault();
+  const { error } = await sb.from('events').insert({
+    title: $('eTitle').value.trim(), category: $('eCat').value, event_date: $('eDate').value, location: $('eLoc').value.trim(),
+    price: +$('ePrice').value, quota: +$('eQuota').value, description: $('eDesc').value.trim(), published: true
+  });
+  const m = $('addMsg');
+  if (error) { m.className = 'msg err'; m.textContent = 'Gagal menyimpan acara.'; return; }
+  m.className = 'msg ok'; m.textContent = 'Acara tersimpan.'; $('addForm').reset(); loadAdmin(); loadEvents();
+});
+if (location.hash === '#admin') showAdmin();
+loadEvents();
+</script>
+</body>
+</html>
