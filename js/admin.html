@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Admin — Matsuri Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<style>
+:root{--night:#150f2e;--night2:#211848;--lilac:#b8a4ff;--pink:#ff3d81;--lemon:#ffe45c;--text:#f3f0ff;--muted:#a9a0d0;--display:'Bricolage Grotesque',system-ui,sans-serif;--body:'DM Sans',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--night);color:var(--text);font-family:var(--body);line-height:1.5}
+:focus-visible{outline:3px solid var(--lemon);outline-offset:2px}
+.wrap{max-width:1100px;margin:0 auto;padding:22px}
+h1,h2{font-family:var(--display);letter-spacing:-.02em}
+.btn{border:0;cursor:pointer;font:700 .92rem var(--body);padding:10px 18px;border-radius:999px;background:var(--pink);color:#fff}
+.btn.alt{background:var(--lemon);color:var(--night)}.btn.ghost{background:transparent;border:2px solid var(--lilac);color:var(--lilac)}
+.btn.sm{padding:6px 12px;font-size:.82rem}.btn.del{background:#5a1f3a;color:#ffb3cd}
+input,select{width:100%;padding:11px 13px;border-radius:12px;border:2px solid #ffffff26;background:var(--night);color:var(--text);font:1rem var(--body)}
+input:focus,select:focus{border-color:var(--lilac);outline:0}
+label{display:block;font-size:.85rem;color:var(--muted);margin:12px 0 5px}
+.box{background:var(--night2);border-radius:20px;padding:24px;border:1px solid #ffffff12}
+#login{max-width:400px;margin:12vh auto}
+#login h1{font-size:2rem;margin-bottom:4px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.tabs{display:flex;gap:8px;margin-bottom:18px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:18px}
+.stats div{background:var(--night2);border-radius:16px;padding:16px}
+.stats b{display:block;font:800 1.8rem var(--display);color:var(--lemon)}.stats small{color:var(--muted)}
+.scroll{overflow-x:auto;border-radius:16px}
+table{width:100%;border-collapse:collapse;font-size:.92rem;min-width:640px}
+th,td{text-align:left;padding:12px 14px;border-bottom:1px solid #ffffff14;vertical-align:middle}
+th{color:var(--muted);font-weight:500;background:#0000002e}
+.pill{padding:3px 10px;border-radius:999px;font-size:.78rem;font-weight:700}
+.on{background:#1f5a3a;color:#aaffcf}.off{background:#3a3a3a;color:#ccc}
+.actions{display:flex;gap:6px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.modal{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;padding:16px;z-index:10;overflow:auto}
+.modal.open{display:flex}.sheet{width:100%;max-width:560px;max-height:94vh;overflow:auto}
+.row{display:flex;gap:10px;margin-top:20px;justify-content:flex-end}
+.chk{display:flex;align-items:center;gap:8px;margin-top:16px}.chk input{width:auto}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,120px);background:var(--lemon);color:var(--night);padding:12px 22px;border-radius:999px;font-weight:700;transition:transform .3s;z-index:20}
+.toast.show{transform:translate(-50%,0)}
+.hide{display:none!important}
+@media(max-width:600px){.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login" class="box">
+  <h1>Masuk admin</h1><p style="color:var(--muted)">Khusus pengelola event.</p>
+  <label for="em">Email</label><input id="em" type="email" autocomplete="username">
+  <label for="pw">Kata sandi</label><input id="pw" type="password" autocomplete="current-password">
+  <p id="err" style="color:#ff9bbb;margin-top:10px;min-height:1.4em"></p>
+  <button class="btn" id="go" style="width:100%;margin-top:6px">Masuk</button>
+</div>
+
+<!-- DASBOR -->
+<div id="app" class="wrap hide">
+  <div class="top"><h1>Dasbor Matsuri Lab</h1><div><span id="who" style="color:var(--muted);margin-right:10px"></span><button class="btn ghost sm" id="out">Keluar</button></div></div>
+  <div class="stats">
+    <div><b id="s1">0</b><small>Event aktif</small></div>
+    <div><b id="s2">0</b><small>Pendaftar</small></div>
+    <div><b id="s3">0</b><small>Tiket terjual</small></div>
+    <div><b id="s4">Rp 0</b><small>Perkiraan pemasukan</small></div>
+  </div>
+  <div class="tabs"><button class="btn alt" id="t1">Event</button><button class="btn ghost" id="t2">Pendaftar</button></div>
+
+  <div id="p1">
+    <div class="top"><h2>Daftar event</h2><button class="btn" id="add">+ Event baru</button></div>
+    <div class="scroll box" style="padding:0"><table><thead><tr><th>Event</th><th>Tanggal</th><th>Kuota</th><th>Status</th><th></th></tr></thead><tbody id="tb1"></tbody></table></div>
+  </div>
+
+  <div id="p2" class="hide">
+    <div class="top"><h2>Daftar pendaftar</h2>
+      <div style="display:flex;gap:8px"><select id="flt" style="width:220px"></select><button class="btn alt" id="csv">Unduh CSV</button></div></div>
+    <div class="scroll box" style="padding:0"><table><thead><tr><th>Nama</th><th>Email</th><th>Event</th><th>Tiket</th><th>Waktu</th><th></th></tr></thead><tbody id="tb2"></tbody></table></div>
+  </div>
+</div>
+
+<!-- FORM EVENT -->
+<div class="modal" id="modal"><div class="sheet box">
+  <h2 id="mt">Event baru</h2>
+  <label for="f-title">Judul</label><input id="f-title">
+  <div class="grid2">
+    <div><label for="f-cat">Kategori</label><input id="f-cat" placeholder="Festival"></div>
+    <div><label for="f-date">Tanggal &amp; jam</label><input id="f-date" type="datetime-local"></div>
+  </div>
+  <label for="f-loc">Lokasi</label><input id="f-loc">
+  <div class="grid2">
+    <div><label for="f-price">Harga (Rp, 0 = gratis)</label><input id="f-price" type="number" min="0" value="0"></div>
+    <div><label for="f-quota">Kuota (0 = tanpa batas)</label><input id="f-quota" type="number" min="0" value="0"></div>
+  </div>
+  <label for="f-img">Link gambar cover (opsional)</label><input id="f-img" placeholder="https://...">
+  <label class="chk"><input id="f-pub" type="checkbox" checked> Tampilkan di website</label>
+  <div class="row"><button class="btn ghost" id="cx">Batal</button><button class="btn" id="save">Simpan event</button></div>
+</div></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* ====== ISI DENGAN DATA SUPABASE KAMU (sama seperti index.html) ====== */
+const SUPABASE_URL  = "https://GANTI-INI.supabase.co";
+const SUPABASE_ANON = "GANTI-DENGAN-ANON-PUBLIC-KEY";
+/* ===================================================================== */
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+const $ = s => document.querySelector(s);
+const esc = s => String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const rp = n => "Rp " + (n||0).toLocaleString("id-ID");
+const tgl = (i,o={dateStyle:"medium"}) => new Date(i).toLocaleString("id-ID",o);
+let events=[], regs=[], editId=null;
+
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2800)}
+
+/* ---- AUTH ---- */
+async function enter(session){
+  const {data:ok}=await db.rpc("is_admin");
+  if(!ok){await db.auth.signOut();$("#err").textContent="Akun ini tidak punya akses admin.";return}
+  $("#login").classList.add("hide");$("#app").classList.remove("hide");
+  $("#who").textContent=session.user.email;
+  await refresh();
+}
+$("#go").onclick=async()=>{
+  $("#err").textContent="";
+  const {data,error}=await db.auth.signInWithPassword({email:$("#em").value.trim(),password:$("#pw").value});
+  if(error)return $("#err").textContent="Email atau kata sandi salah.";
+  enter(data.session);
+};
+$("#pw").addEventListener("keydown",e=>{if(e.key==="Enter")$("#go").click()});
+$("#out").onclick=async()=>{await db.auth.signOut();location.reload()};
+db.auth.getSession().then(({data})=>{if(data.session)enter(data.session)});
+
+/* ---- DATA ---- */
+async function refresh(){
+  const [e,r]=await Promise.all([
+    db.from("events").select("*").order("starts_at",{ascending:false}),
+    db.from("registrations").select("*, events(title)").order("created_at",{ascending:false})
+  ]);
+  if(e.error||r.error)return toast("Gagal memuat data. Cek aturan RLS.");
+  events=e.data;regs=r.data;draw();
+}
+function draw(){
+  const reg={};regs.forEach(r=>reg[r.event_id]=(reg[r.event_id]||0)+r.tickets);
+  const price=Object.fromEntries(events.map(e=>[e.id,e.price]));
+  $("#s1").textContent=events.filter(e=>e.published&&new Date(e.starts_at)>=Date.now()).length;
+  $("#s2").textContent=regs.length;
+  $("#s3").textContent=regs.reduce((a,r)=>a+r.tickets,0);
+  $("#s4").textContent=rp(regs.reduce((a,r)=>a+r.tickets*(price[r.event_id]||0),0));
+
+  $("#tb1").innerHTML=events.length?events.map(e=>`<tr>
+    <td><b>${esc(e.title)}</b><br><small style="color:var(--muted)">${esc(e.category)} · ${esc(e.location)}</small></td>
+    <td>${tgl(e.starts_at,{dateStyle:"medium",timeStyle:"short"})}</td>
+    <td>${reg[e.id]||0} / ${e.quota||"∞"}</td>
+    <td><span class="pill ${e.published?"on":"off"}">${e.published?"Tayang":"Disembunyikan"}</span></td>
+    <td><div class="actions"><button class="btn sm ghost" data-edit="${e.id}">Ubah</button><button class="btn sm del" data-del="${e.id}">Hapus</button></div></td></tr>`).join("")
+    :`<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:30px">Belum ada event. Klik “Event baru”.</td></tr>`;
+
+  const cur=$("#flt").value;
+  $("#flt").innerHTML=`<option value="">Semua event</option>`+events.map(e=>`<option value="${e.id}">${esc(e.title)}</option>`).join("");
+  $("#flt").value=cur;drawRegs();
+}
+function listRegs(){const f=$("#flt").value;return f?regs.filter(r=>String(r.event_id)===f):regs}
+function drawRegs(){
+  const l=listRegs();
+  $("#tb2").innerHTML=l.length?l.map(r=>`<tr><td>${esc(r.name)}</td><td>${esc(r.email)}</td><td>${esc(r.events?.title)}</td><td>${r.tickets}</td><td>${tgl(r.created_at,{dateStyle:"short",timeStyle:"short"})}</td>
+    <td><button class="btn sm del" data-rdel="${r.id}">Hapus</button></td></tr>`).join("")
+    :`<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:30px">Belum ada pendaftar.</td></tr>`;
+}
+$("#flt").onchange=drawRegs;
+
+/* ---- TAB ---- */
+function tab(n){
+  $("#p1").classList.toggle("hide",n!==1);$("#p2").classList.toggle("hide",n!==2);
+  $("#t1").className="btn "+(n===1?"alt":"ghost");$("#t2").className="btn "+(n===2?"alt":"ghost");
+}
+$("#t1").onclick=()=>tab(1);$("#t2").onclick=()=>tab(2);
+
+/* ---- FORM EVENT ---- */
+const loc = iso => new Date(new Date(iso)-new Date(iso).getTimezoneOffset()*6e4).toISOString().slice(0,16);
+function openForm(e){
+  editId=e?.id||null;$("#mt").textContent=e?"Ubah event":"Event baru";
+  $("#f-title").value=e?.title||"";$("#f-cat").value=e?.category||"Festival";
+  $("#f-date").value=e?loc(e.starts_at):"";$("#f-loc").value=e?.location||"";
+  $("#f-price").value=e?.price??0;$("#f-quota").value=e?.quota??0;
+  $("#f-img").value=e?.image_url||"";$("#f-pub").checked=e?e.published:true;
+  $("#modal").classList.add("open");$("#f-title").focus();
+}
+const closeForm=()=>$("#modal").classList.remove("open");
+$("#add").onclick=()=>openForm();$("#cx").onclick=closeForm;
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeForm()});
+
+$("#save").onclick=async()=>{
+  const row={title:$("#f-title").value.trim(),category:$("#f-cat").value.trim()||"Festival",
+    starts_at:$("#f-date").value?new Date($("#f-date").value).toISOString():"",
+    location:$("#f-loc").value.trim(),price:+$("#f-price").value||0,quota:+$("#f-quota").value||0,
+    image_url:$("#f-img").value.trim()||null,published:$("#f-pub").checked};
+  if(!row.title||!row.starts_at||!row.location)return toast("Judul, tanggal, dan lokasi wajib diisi.");
+  const q=editId?db.from("events").update(row).eq("id",editId):db.from("events").insert(row);
+  const {error}=await q;
+  if(error){console.error(error);return toast("Gagal menyimpan event.")}
+  closeForm();toast("Event tersimpan.");refresh();
+};
+
+/* ---- HAPUS & UBAH ---- */
+document.addEventListener("click",async e=>{
+  const d=e.target.dataset;
+  if(d.edit)openForm(events.find(x=>String(x.id)===d.edit));
+  if(d.del&&confirm("Hapus event ini beserta seluruh pendaftarnya?")){
+    const {error}=await db.from("events").delete().eq("id",d.del);
+    toast(error?"Gagal menghapus event.":"Event dihapus.");refresh();
+  }
+  if(d.rdel&&confirm("Hapus pendaftar ini?")){
+    const {error}=await db.from("registrations").delete().eq("id",d.rdel);
+    toast(error?"Gagal menghapus pendaftar.":"Pendaftar dihapus.");refresh();
+  }
+});
+
+/* ---- CSV ---- */
+$("#csv").onclick=()=>{
+  const cell=v=>`"${String(v??"").replace(/"/g,'""').replace(/^([=+\-@])/,"'$1")}"`;
+  const rows=[["Nama","Email","Event","Tiket","Waktu daftar"],...listRegs().map(r=>[r.name,r.email,r.events?.title,r.tickets,r.created_at])];
+  const blob=new Blob(["\ufeff"+rows.map(r=>r.map(cell).join(",")).join("\n")],{type:"text/csv"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="pendaftar.csv";a.click();
+};
+</script>
+</body>
+</html>
