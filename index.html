@@ -1,314 +1,271 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lantera Event — Event Organizer Tasikmalaya</title>
-<meta name="description" content="Lantera Event: perencanaan dan pelaksanaan konser, workshop, pameran, dan pernikahan.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏮</text></svg>">
+<title>Matsuri Lab — Event Organizer</title>
+<meta name="description" content="Event organizer untuk festival, konser, kompetisi, dan komunitas. Lihat jadwal dan daftar langsung.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <style>
-:root{--ink:#1b1f4b;--paper:#eef2f6;--card:#fff;--saffron:#f2b705;--rose:#d6336c;--muted:#5a6078;--line:#d5dbe6;
---display:'Bricolage Grotesque',Georgia,serif;--body:'Instrument Sans',system-ui,sans-serif}
-@media(prefers-color-scheme:dark){:root{--ink:#e8eaff;--paper:#12142b;--card:#1c2040;--muted:#a3a9c9;--line:#2e335c}}
-*{box-sizing:border-box}
+:root{
+  --night:#150f2e; --night2:#211848; --lilac:#b8a4ff; --pink:#ff3d81; --lemon:#ffe45c; --mist:#f3f0ff;
+  --text:#f3f0ff; --muted:#a9a0d0;
+  --display:'Bricolage Grotesque',system-ui,sans-serif; --body:'DM Sans',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{margin:0;font-family:var(--body);background:var(--paper);color:var(--ink);line-height:1.6}
-a{color:inherit}
-:focus-visible{outline:3px solid var(--saffron);outline-offset:2px}
-.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
-header{display:flex;justify-content:space-between;align-items:center;padding:18px 0}
-.brand{font:800 1.3rem var(--display);text-decoration:none}
-nav{display:flex;gap:20px;font-weight:500}
-nav a{text-decoration:none}
-nav a:hover{text-decoration:underline}
-.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:40px;align-items:center;padding:48px 0 72px}
-.hero h1{font:800 clamp(2.2rem,5.5vw,4rem)/1.05 var(--display);margin:0 0 18px;letter-spacing:-.02em}
-.hero p{font-size:1.1rem;color:var(--muted);max-width:46ch;margin:0 0 26px}
-.btn{display:inline-block;border:0;border-radius:10px;padding:12px 20px;font:600 1rem var(--body);cursor:pointer;background:var(--ink);color:var(--paper);text-decoration:none}
-.btn:hover{opacity:.9}
-.btn.alt{background:transparent;color:var(--ink);border:2px solid var(--ink)}
-.btn.sm{padding:8px 14px;font-size:.9rem}
-.btn.danger{background:var(--rose);color:#fff}
-.stub{background:var(--saffron);color:#1b1f4b;border-radius:16px;padding:26px 26px 26px 34px;position:relative;transform:rotate(2deg);
- -webkit-mask:radial-gradient(circle 12px at 0 50%,#0000 98%,#000) ;mask:radial-gradient(circle 12px at 0 50%,#0000 98%,#000)}
-.stub small{font-weight:600}
-.stub h2{font:800 1.6rem/1.15 var(--display);margin:6px 0 10px}
-.stub .big{font:800 3rem/1 var(--display)}
-section{padding:56px 0}
-h2.sec{font:800 clamp(1.7rem,3.5vw,2.4rem) var(--display);margin:0 0 6px;letter-spacing:-.01em}
-.sub{color:var(--muted);margin:0 0 24px}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
-.chip{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer;font:500 .95rem var(--body)}
-.chip[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
-.ev{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:8px}
-.ev .cat{color:var(--rose);font-weight:600;font-size:.9rem}
-.ev h3{font:700 1.3rem/1.2 var(--display);margin:0}
-.ev p{margin:0;color:var(--muted);flex:1}
-.ev .meta{font-size:.95rem}
-.ev .foot{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
-.price{font:700 1.1rem var(--display)}
-.empty{padding:30px;border:2px dashed var(--line);border-radius:14px;color:var(--muted)}
-.services{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:28px}
-.services h3{font:700 1.2rem var(--display);margin:0 0 6px}
-.services p{margin:0;color:var(--muted)}
-footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
-dialog{border:0;border-radius:16px;padding:26px;width:min(520px,92vw);background:var(--card);color:var(--ink)}
-dialog.wide{width:min(900px,95vw)}
-dialog::backdrop{background:#0008}
-label{display:block;font-weight:600;font-size:.92rem;margin:12px 0 4px}
-input,select,textarea{width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;font:1rem var(--body);background:var(--paper);color:var(--ink)}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.msg{margin:12px 0 0;font-weight:500}
-.msg.err{color:var(--rose)}
-.msg.ok{color:#1a7f4b}
-.actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
-table{width:100%;border-collapse:collapse;font-size:.92rem}
-th,td{text-align:left;padding:8px;border-bottom:1px solid var(--line)}
-.tbl{overflow-x:auto}
-@media(max-width:760px){.hero{grid-template-columns:1fr}.stub{transform:none}.row{grid-template-columns:1fr}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{background:var(--night);color:var(--text);font-family:var(--body);line-height:1.6;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:3px solid var(--lemon);outline-offset:3px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+
+/* NAV */
+header{position:sticky;top:0;z-index:20;background:rgba(21,15,46,.85);backdrop-filter:blur(10px);border-bottom:1px solid #ffffff14}
+nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{font-family:var(--display);font-weight:800;font-size:1.3rem;letter-spacing:-.02em}
+.logo i{font-style:normal;color:var(--pink)}
+nav ul{display:flex;gap:26px;list-style:none;font-weight:500;font-size:.95rem}
+nav ul a:hover{color:var(--lemon)}
+.btn{display:inline-block;border:0;cursor:pointer;font:700 1rem var(--body);padding:13px 24px;border-radius:999px;background:var(--pink);color:#fff;transition:transform .15s,background .15s}
+.btn:hover{transform:translateY(-2px);background:#ff5a95}
+.btn.alt{background:var(--lemon);color:var(--night)}
+.btn.ghost{background:transparent;border:2px solid var(--lilac);color:var(--lilac)}
+
+/* HERO */
+.hero{position:relative;padding:84px 0 70px}
+.hero::before{content:"";position:absolute;right:-120px;top:-60px;width:520px;height:520px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,var(--pink),#7a3cff 60%,transparent 70%);opacity:.55;filter:blur(8px)}
+.hero .wrap{position:relative}
+.hero h1{font-family:var(--display);font-weight:800;font-size:clamp(2.8rem,9vw,6.4rem);line-height:.95;letter-spacing:-.04em;max-width:11ch}
+.hero h1 span{display:inline-block;background:var(--lemon);color:var(--night);padding:0 .15em;transform:rotate(-2deg);border-radius:10px}
+.hero p{max-width:46ch;margin:26px 0 32px;color:var(--muted);font-size:1.15rem}
+.hero .cta{display:flex;gap:14px;flex-wrap:wrap}
+.stats{display:flex;gap:40px;margin-top:54px;flex-wrap:wrap}
+.stats b{display:block;font:800 2rem var(--display)}
+.stats small{color:var(--muted)}
+
+/* MARQUEE */
+.marquee{background:var(--pink);color:var(--night);overflow:hidden;white-space:nowrap;transform:rotate(-1.2deg);margin:20px -20px 0}
+.marquee div{display:inline-block;padding:14px 0;font:800 1.25rem var(--display);animation:slide 28s linear infinite}
+.marquee span{margin:0 22px}
+@keyframes slide{to{transform:translateX(-50%)}}
+
+/* SECTIONS */
+section{padding:84px 0}
+h2{font:800 clamp(2rem,5vw,3.2rem)/1.05 var(--display);letter-spacing:-.03em;margin-bottom:12px}
+.sub{color:var(--muted);max-width:52ch;margin-bottom:34px}
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:30px}
+.chip{cursor:pointer;border:2px solid #ffffff26;background:transparent;color:var(--text);padding:8px 18px;border-radius:999px;font:500 .92rem var(--body)}
+.chip.on,.chip:hover{background:var(--lilac);border-color:var(--lilac);color:var(--night)}
+
+/* EVENT CARDS */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:22px}
+.card{background:var(--night2);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;border:1px solid #ffffff12;transition:transform .2s,border-color .2s}
+.card:hover{transform:translateY(-6px);border-color:var(--lilac)}
+.cover{height:170px;position:relative;background:linear-gradient(135deg,#7a3cff,var(--pink)) center/cover}
+.date{position:absolute;left:16px;top:16px;background:var(--lemon);color:var(--night);border-radius:14px;padding:6px 14px;text-align:center;font-family:var(--display);line-height:1.05}
+.date b{display:block;font-size:1.6rem}
+.date small{font-weight:700;font-size:.75rem}
+.tag{position:absolute;right:14px;bottom:14px;background:var(--night);color:var(--lilac);padding:4px 12px;border-radius:999px;font-size:.8rem;font-weight:700}
+.card .body{padding:20px;display:flex;flex-direction:column;gap:8px;flex:1}
+.card h3{font:700 1.3rem var(--display);letter-spacing:-.01em}
+.meta{color:var(--muted);font-size:.92rem}
+.card .foot{margin-top:auto;padding-top:14px;display:flex;justify-content:space-between;align-items:center}
+.price{font:800 1.15rem var(--display);color:var(--lemon)}
+.card .btn{padding:9px 18px;font-size:.92rem}
+.left{font-size:.8rem;color:var(--pink);font-weight:700}
+.empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:40px;border:2px dashed #ffffff26;border-radius:22px}
+
+/* LAYANAN */
+.svc{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px}
+.svc div{padding:28px;border-radius:22px;background:var(--mist);color:var(--night)}
+.svc div:nth-child(2){background:var(--lilac)}
+.svc div:nth-child(3){background:var(--lemon)}
+.svc h3{font:800 1.4rem var(--display);margin-bottom:8px}
+.svc .ic{font-size:2rem;margin-bottom:10px}
+
+/* CTA + FOOTER */
+.cta-box{background:linear-gradient(120deg,#7a3cff,var(--pink));border-radius:30px;padding:56px 32px;text-align:center}
+.cta-box p{margin:12px auto 26px;max-width:46ch}
+footer{border-top:1px solid #ffffff14;padding:34px 0;color:var(--muted);font-size:.92rem}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+/* MODAL */
+.modal{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:18px;z-index:50}
+.modal.open{display:flex}
+.sheet{background:var(--night2);border-radius:24px;padding:28px;width:100%;max-width:440px;border:1px solid var(--lilac);animation:pop .22s ease}
+@keyframes pop{from{transform:scale(.94);opacity:0}}
+.sheet h3{font:800 1.5rem var(--display);margin-bottom:4px}
+label{display:block;font-size:.9rem;margin:14px 0 6px;color:var(--muted)}
+input{width:100%;padding:12px 14px;border-radius:12px;border:2px solid #ffffff26;background:var(--night);color:var(--text);font:1rem var(--body)}
+input:focus{border-color:var(--lilac);outline:0}
+.row{display:flex;gap:10px;margin-top:22px}
+.row .btn{flex:1}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,120px);background:var(--lemon);color:var(--night);padding:14px 24px;border-radius:999px;font-weight:700;transition:transform .3s;z-index:60}
+.toast.show{transform:translate(-50%,0)}
+
+@media(max-width:700px){nav ul{display:none}.hero{padding-top:56px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto}}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <a class="brand" href="#">🏮 Lantera Event</a>
-    <nav><a href="#acara">Acara</a><a href="#layanan">Layanan</a><a href="#kontak">Kontak</a></nav>
-  </header>
 
-  <div class="hero">
-    <div>
-      <h1>Kami yang repot, Anda yang menikmati harinya.</h1>
-      <p>Dari konser kecil sampai pameran besar, tim Lantera Event menangani izin, panggung, vendor, hingga tiket masuk.</p>
-      <a class="btn" href="#acara">Lihat acara mendatang</a>
-      <a class="btn alt" href="#kontak">Sewa kami</a>
-    </div>
-    <div class="stub" id="stub" aria-live="polite">
-      <small>Acara terdekat</small>
-      <h2>Memuat…</h2>
-    </div>
+<header><div class="wrap"><nav>
+  <a href="#" class="logo">Matsuri<i>Lab</i></a>
+  <ul><li><a href="#event">Event</a></li><li><a href="#layanan">Layanan</a></li><li><a href="#kontak">Kontak</a></li></ul>
+  <a href="#event" class="btn alt">Lihat jadwal</a>
+</nav></div></header>
+
+<main>
+<div class="hero"><div class="wrap">
+  <h1>Event seru, <span>tanpa ribet.</span></h1>
+  <p>Kami merancang dan menjalankan festival, kompetisi, konser, dan acara komunitas. Pilih event, daftar, selesai.</p>
+  <div class="cta"><a href="#event" class="btn">Daftar event</a><a href="#kontak" class="btn ghost">Buat event bersama kami</a></div>
+  <div class="stats">
+    <div><b data-n="120">0</b><small>event terlaksana</small></div>
+    <div><b data-n="48000">0</b><small>pengunjung</small></div>
+    <div><b data-n="35">0</b><small>mitra &amp; sponsor</small></div>
   </div>
-
-  <section id="acara">
-    <h2 class="sec">Acara mendatang</h2>
-    <p class="sub">Pilih acara, isi data, dan tiket Anda kami kirim lewat email.</p>
-    <div class="chips" id="chips"></div>
-    <div class="grid" id="events"></div>
-  </section>
-
-  <section id="layanan">
-    <h2 class="sec">Yang bisa kami kerjakan</h2>
-    <p class="sub">Satu tim, dari rencana sampai bongkar panggung.</p>
-    <div class="services">
-      <div><h3>Konser dan festival</h3><p>Panggung, tata suara, keamanan, dan penjualan tiket online.</p></div>
-      <div><h3>Workshop dan seminar</h3><p>Venue, narasumber, peserta, sertifikat, dan dokumentasi.</p></div>
-      <div><h3>Pernikahan dan perayaan</h3><p>Dekorasi, katering, rundown, dan koordinator hari-H.</p></div>
-    </div>
-  </section>
-
-  <section id="kontak">
-    <h2 class="sec">Rencanakan acara Anda</h2>
-    <p class="sub">Ceritakan tanggal, jumlah tamu, dan anggaran. Kami balas hari yang sama.</p>
-    <a class="btn" id="wa" target="_blank" rel="noopener" href="#">Chat WhatsApp</a>
-  </section>
-
-  <footer>
-    <span>© <span id="yr"></span> Lantera Event, Tasikmalaya</span>
-    <a href="#admin" id="adminLink">Masuk admin</a>
-  </footer>
+</div>
+<div class="marquee" aria-hidden="true"><div id="mq"></div></div>
 </div>
 
-<!-- Dialog pendaftaran -->
-<dialog id="regDlg">
-  <form id="regForm">
-    <h2 style="font:800 1.4rem var(--display);margin:0" id="regTitle">Daftar</h2>
-    <label for="rName">Nama lengkap</label><input id="rName" required minlength="2" maxlength="100" autocomplete="name">
-    <label for="rEmail">Email</label><input id="rEmail" type="email" required autocomplete="email">
-    <div class="row">
-      <div><label for="rPhone">Nomor WhatsApp</label><input id="rPhone" type="tel" required minlength="8" maxlength="20" autocomplete="tel"></div>
-      <div><label for="rTix">Jumlah tiket</label><input id="rTix" type="number" min="1" max="10" value="1" required></div>
-    </div>
-    <p class="msg" id="regMsg" role="status"></p>
-    <div class="actions"><button class="btn" type="submit" id="regBtn">Kirim pendaftaran</button><button class="btn alt" type="button" data-close>Tutup</button></div>
-  </form>
-</dialog>
+<section id="event"><div class="wrap">
+  <h2>Event mendatang</h2>
+  <p class="sub">Pilih kategori, lalu klik Daftar. Tiket dikonfirmasi lewat email.</p>
+  <div class="filters" id="filters"></div>
+  <div class="grid" id="grid"><div class="empty">Memuat event…</div></div>
+</div></section>
 
-<!-- Dialog admin -->
-<dialog id="admDlg" class="wide">
-  <div id="loginBox">
-    <h2 style="font:800 1.4rem var(--display);margin:0">Masuk admin</h2>
-    <form id="loginForm">
-      <label for="aEmail">Email</label><input id="aEmail" type="email" required autocomplete="username">
-      <label for="aPass">Kata sandi</label><input id="aPass" type="password" required autocomplete="current-password">
-      <p class="msg" id="loginMsg" role="status"></p>
-      <div class="actions"><button class="btn" type="submit">Masuk</button><button class="btn alt" type="button" data-close>Tutup</button></div>
-    </form>
+<section id="layanan" style="background:#0f0a24"><div class="wrap">
+  <h2>Yang kami kerjakan</h2>
+  <p class="sub">Dari ide sampai hari-H, satu tim yang sama.</p>
+  <div class="svc">
+    <div><div class="ic">🎪</div><h3>Festival &amp; konvensi</h3><p>Venue, tenant, panggung, dan alur pengunjung untuk acara ratusan sampai ribuan orang.</p></div>
+    <div><div class="ic">🏆</div><h3>Kompetisi</h3><p>Lomba cosplay, e-sports, band, dan talenta lain: juri, jadwal, dan skor tertata.</p></div>
+    <div><div class="ic">🎟️</div><h3>Tiket &amp; registrasi</h3><p>Pendaftaran online, kuota otomatis, dan data peserta rapi di satu tempat.</p></div>
   </div>
-  <div id="panel" hidden>
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
-      <h2 style="font:800 1.4rem var(--display);margin:0">Panel admin</h2>
-      <div class="actions" style="margin:0"><button class="btn alt sm" id="logout">Keluar</button><button class="btn alt sm" data-close>Tutup</button></div>
-    </div>
-    <h3>Tambah acara</h3>
-    <form id="addForm">
-      <div class="row">
-        <div><label for="eTitle">Nama acara</label><input id="eTitle" required></div>
-        <div><label for="eCat">Kategori</label>
-          <select id="eCat"><option>Konser</option><option>Workshop</option><option>Pameran</option><option>Pernikahan</option><option>Lainnya</option></select></div>
-      </div>
-      <div class="row">
-        <div><label for="eDate">Tanggal</label><input id="eDate" type="date" required></div>
-        <div><label for="eLoc">Lokasi</label><input id="eLoc" required></div>
-      </div>
-      <div class="row">
-        <div><label for="ePrice">Harga tiket (Rp, 0 = gratis)</label><input id="ePrice" type="number" min="0" value="0" required></div>
-        <div><label for="eQuota">Kuota</label><input id="eQuota" type="number" min="1" value="100" required></div>
-      </div>
-      <label for="eDesc">Deskripsi</label><textarea id="eDesc" rows="3"></textarea>
-      <p class="msg" id="addMsg" role="status"></p>
-      <div class="actions"><button class="btn" type="submit">Simpan acara</button></div>
-    </form>
-    <h3>Acara</h3><div class="tbl"><table><thead><tr><th>Acara</th><th>Tanggal</th><th>Terbit</th><th></th></tr></thead><tbody id="admEvents"></tbody></table></div>
-    <h3>Pendaftar</h3><div class="tbl"><table><thead><tr><th>Acara</th><th>Nama</th><th>Email</th><th>WhatsApp</th><th>Tiket</th></tr></thead><tbody id="admRegs"></tbody></table></div>
-  </div>
-</dialog>
+</div></section>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<section id="kontak"><div class="wrap">
+  <div class="cta-box">
+    <h2>Punya acara di kepala?</h2>
+    <p>Ceritakan idenya. Kami balas dalam 1×24 jam dengan rencana dan estimasi biaya.</p>
+    <a class="btn alt" href="mailto:halo@matsurilab.id">Kirim brief ke halo@matsurilab.id</a>
+  </div>
+</div></section>
+</main>
+
+<footer><div class="wrap"><span>© <span id="yr"></span> Matsuri Lab. Semua hak dilindungi.</span><span>Instagram @matsurilab · halo@matsurilab.id</span></div></footer>
+
+<!-- MODAL DAFTAR -->
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mt">
+  <div class="sheet">
+    <h3 id="mt">Daftar event</h3><p class="meta" id="ms"></p>
+    <label for="f-name">Nama lengkap</label><input id="f-name" autocomplete="name">
+    <label for="f-email">Email</label><input id="f-email" type="email" autocomplete="email">
+    <label for="f-qty">Jumlah tiket</label><input id="f-qty" type="number" min="1" max="10" value="1">
+    <div class="row"><button class="btn ghost" id="cancel">Batal</button><button class="btn" id="send">Kirim pendaftaran</button></div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
 <script>
-/* ====== GANTI 3 NILAI INI ====== */
-const SUPABASE_URL = 'https://XXXXXXXX.supabase.co';
-const SUPABASE_ANON_KEY = 'ISI_DENGAN_ANON_PUBLIC_KEY';
-const WHATSAPP = '6281234567890'; // format internasional tanpa +
-/* =============================== */
+/* ====== 1. ISI DENGAN DATA SUPABASE KAMU ====== */
+const SUPABASE_URL  = "https://GANTI-INI.supabase.co";
+const SUPABASE_ANON = "GANTI-DENGAN-ANON-PUBLIC-KEY";
+/* ============================================== */
 
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-const $ = id => document.getElementById(id);
-const rupiah = n => n > 0 ? 'Rp ' + Number(n).toLocaleString('id-ID') : 'Gratis';
-const tgl = d => new Date(d + 'T00:00:00').toLocaleDateString('id-ID', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
-const el = (tag, props = {}, ...kids) => {
-  const n = Object.assign(document.createElement(tag), props);
-  kids.forEach(k => n.append(k));
-  return n;
+const configured = !SUPABASE_URL.includes("GANTI");
+const db = configured ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON) : null;
+
+// Data contoh, tampil otomatis kalau Supabase belum diisi
+const d = n => new Date(Date.now()+n*864e5).toISOString();
+const DEMO = [
+  {id:1,title:"Sakura Fest Tasik",category:"Festival",starts_at:d(14),location:"GOR Ceper, Tasikmalaya",price:35000,quota:500,registered:312,image_url:""},
+  {id:2,title:"Cosplay Battle Royale",category:"Kompetisi",starts_at:d(30),location:"Plaza Asia, Tasikmalaya",price:50000,quota:120,registered:118,image_url:""},
+  {id:3,title:"Indie Night Live",category:"Konser",starts_at:d(45),location:"Alun-alun Tasikmalaya",price:0,quota:300,registered:90,image_url:""},
+  {id:4,title:"Workshop Ilustrasi Digital",category:"Workshop",starts_at:d(60),location:"Co-working Space Kota",price:75000,quota:40,registered:12,image_url:""}
+];
+
+const $ = s => document.querySelector(s);
+const rp = n => n ? "Rp " + n.toLocaleString("id-ID") : "Gratis";
+const fmt = (iso,o) => new Date(iso).toLocaleDateString("id-ID",o);
+let events = [], active = "Semua", current = null;
+
+function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),3200)}
+const esc = s => String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+async function load(){
+  if(!configured){events=DEMO;return render()}
+  const {data,error}=await db.from("events_public").select("*").order("starts_at");
+  if(error){console.error(error);events=DEMO;toast("Data live gagal dimuat, menampilkan contoh.")}
+  else events=data;
+  render();
+}
+
+function render(){
+  const cats=["Semua",...new Set(events.map(e=>e.category).filter(Boolean))];
+  $("#filters").innerHTML=cats.map(c=>`<button class="chip ${c===active?"on":""}" data-c="${esc(c)}">${esc(c)}</button>`).join("");
+  const list=events.filter(e=>active==="Semua"||e.category===active);
+  $("#grid").innerHTML=list.length?list.map(e=>{
+    const left=Math.max((e.quota||0)-(e.registered||0),0), full=e.quota&&left===0;
+    const bg=e.image_url?`style="background-image:url('${esc(e.image_url)}')"`:"";
+    return `<article class="card">
+      <div class="cover" ${bg}>
+        <div class="date"><b>${fmt(e.starts_at,{day:"2-digit"})}</b><small>${fmt(e.starts_at,{month:"short"})}</small></div>
+        <span class="tag">${esc(e.category)}</span>
+      </div>
+      <div class="body">
+        <h3>${esc(e.title)}</h3>
+        <p class="meta">📍 ${esc(e.location)}<br>🕒 ${fmt(e.starts_at,{weekday:"long",hour:"2-digit",minute:"2-digit"})}</p>
+        <div class="foot">
+          <div><div class="price">${rp(e.price)}</div>${e.quota?`<div class="left">${full?"Kuota penuh":"Sisa "+left+" tiket"}</div>`:""}</div>
+          <button class="btn" data-id="${e.id}" ${full?"disabled style='opacity:.5;cursor:not-allowed'":""}>Daftar</button>
+        </div>
+      </div></article>`}).join(""):`<div class="empty">Belum ada event di kategori ini. Cek lagi nanti.</div>`;
+}
+
+$("#filters").addEventListener("click",e=>{const c=e.target.dataset.c;if(c){active=c;render()}});
+$("#grid").addEventListener("click",e=>{
+  const id=e.target.dataset.id; if(!id||e.target.disabled)return;
+  current=events.find(x=>String(x.id)===id);
+  $("#mt").textContent=current.title; $("#ms").textContent=fmt(current.starts_at,{dateStyle:"full"})+" · "+rp(current.price);
+  $("#modal").classList.add("open"); $("#f-name").focus();
+});
+const close=()=>$("#modal").classList.remove("open");
+$("#cancel").onclick=close;
+$("#modal").addEventListener("click",e=>{if(e.target.id==="modal")close()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")close()});
+
+$("#send").onclick=async()=>{
+  const name=$("#f-name").value.trim(), email=$("#f-email").value.trim(), qty=+$("#f-qty").value;
+  if(name.length<2) return toast("Isi nama lengkap dulu.");
+  if(!/^\S+@\S+\.\S+$/.test(email)) return toast("Format email belum benar.");
+  if(!(qty>=1&&qty<=10)) return toast("Jumlah tiket harus 1 sampai 10.");
+  const btn=$("#send"); btn.disabled=true; btn.textContent="Mengirim…";
+  if(configured){
+    const {error}=await db.from("registrations").insert({event_id:current.id,name,email,tickets:qty});
+    if(error){console.error(error);btn.disabled=false;btn.textContent="Kirim pendaftaran";return toast("Gagal mengirim. Coba lagi sebentar.")}
+  }
+  btn.disabled=false; btn.textContent="Kirim pendaftaran";
+  close(); ["#f-name","#f-email"].forEach(s=>$(s).value=""); $("#f-qty").value=1;
+  toast("Terdaftar! Cek email kamu untuk konfirmasi.");
+  if(configured) load();
 };
-let events = [], filter = 'Semua';
 
-$('yr').textContent = new Date().getFullYear();
-$('wa').href = 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent('Halo Lantera Event, saya ingin konsultasi acara.');
-
-document.addEventListener('click', e => { if (e.target.closest('[data-close]')) e.target.closest('dialog').close(); });
-
-/* ---------- Publik ---------- */
-async function loadEvents() {
-  const today = new Date().toISOString().slice(0, 10);
-  const { data, error } = await sb.from('events').select('*').eq('published', true).gte('event_date', today).order('event_date');
-  if (error) { $('events').replaceChildren(el('div', {className:'empty', textContent:'Acara belum bisa dimuat. Periksa konfigurasi Supabase.'})); return; }
-  events = data;
-  renderStub(); renderChips(); renderEvents();
-}
-function renderStub() {
-  const s = $('stub'), e = events[0];
-  s.replaceChildren(el('small', {textContent:'Acara terdekat'}));
-  if (!e) { s.append(el('h2', {textContent:'Jadwal baru segera hadir'})); return; }
-  const d = new Date(e.event_date + 'T00:00:00');
-  s.append(
-    el('div', {className:'big', textContent: d.getDate() + ' ' + d.toLocaleDateString('id-ID', {month:'short'})}),
-    el('h2', {textContent:e.title}),
-    el('div', {textContent:e.location})
-  );
-}
-function renderChips() {
-  const cats = ['Semua', ...new Set(events.map(e => e.category))];
-  $('chips').replaceChildren(...cats.map(c => {
-    const b = el('button', {className:'chip', textContent:c, type:'button'});
-    b.setAttribute('aria-pressed', c === filter);
-    b.onclick = () => { filter = c; renderChips(); renderEvents(); };
-    return b;
-  }));
-}
-function renderEvents() {
-  const list = events.filter(e => filter === 'Semua' || e.category === filter);
-  if (!list.length) { $('events').replaceChildren(el('div', {className:'empty', textContent:'Belum ada acara di kategori ini. Cek lagi minggu depan atau hubungi kami.'})); return; }
-  $('events').replaceChildren(...list.map(e => {
-    const btn = el('button', {className:'btn sm', type:'button', textContent:'Daftar'});
-    btn.onclick = () => openReg(e);
-    return el('article', {className:'ev'},
-      el('span', {className:'cat', textContent:e.category}),
-      el('h3', {textContent:e.title}),
-      el('div', {className:'meta', textContent: tgl(e.event_date) + ', ' + e.location}),
-      el('p', {textContent:e.description || ''}),
-      el('div', {className:'foot'}, el('span', {className:'price', textContent:rupiah(e.price)}), btn)
-    );
-  }));
-}
-let activeEvent = null;
-function openReg(e) {
-  activeEvent = e;
-  $('regTitle').textContent = 'Daftar: ' + e.title;
-  $('regMsg').textContent = ''; $('regMsg').className = 'msg';
-  $('regDlg').showModal();
-}
-$('regForm').addEventListener('submit', async ev => {
-  ev.preventDefault();
-  const btn = $('regBtn'); btn.disabled = true;
-  const { error } = await sb.from('registrations').insert({
-    event_id: activeEvent.id, name: $('rName').value.trim(), email: $('rEmail').value.trim(),
-    phone: $('rPhone').value.trim(), tickets: +$('rTix').value
-  });
-  btn.disabled = false;
-  const m = $('regMsg');
-  if (error) { m.className = 'msg err'; m.textContent = 'Pendaftaran gagal. Periksa data Anda lalu coba lagi.'; return; }
-  m.className = 'msg ok'; m.textContent = 'Terima kasih! Pendaftaran Anda tercatat. Kami hubungi lewat WhatsApp.';
-  $('regForm').reset();
+// Marquee, counter, tahun
+const words=["Festival","Cosplay","Konser","Workshop","Kompetisi","Gathering","Pameran","Komunitas"];
+$("#mq").innerHTML=[...words,...words,...words,...words].map(w=>`<span>${w} ✦</span>`).join("");
+document.querySelectorAll("[data-n]").forEach(el=>{
+  const end=+el.dataset.n,t0=performance.now();
+  (function step(t){const p=Math.min((t-t0)/1200,1);el.textContent=Math.round(end*p).toLocaleString("id-ID")+(p===1?"+":"");if(p<1)requestAnimationFrame(step)})(t0);
 });
-
-/* ---------- Admin ---------- */
-async function showAdmin() {
-  const { data: { session } } = await sb.auth.getSession();
-  $('loginBox').hidden = !!session; $('panel').hidden = !session;
-  if (session) loadAdmin();
-  if (!$('admDlg').open) $('admDlg').showModal();
-}
-async function loadAdmin() {
-  const [ev, rg] = await Promise.all([
-    sb.from('events').select('*').order('event_date', {ascending:false}),
-    sb.from('registrations').select('*, events(title)').order('created_at', {ascending:false})
-  ]);
-  $('admEvents').replaceChildren(...(ev.data || []).map(e => {
-    const tog = el('button', {className:'btn alt sm', textContent: e.published ? 'Sembunyikan' : 'Terbitkan'});
-    tog.onclick = async () => { await sb.from('events').update({published: !e.published}).eq('id', e.id); loadAdmin(); loadEvents(); };
-    const del = el('button', {className:'btn danger sm', textContent:'Hapus'});
-    del.onclick = async () => { if (confirm('Hapus acara dan semua pendaftarnya?')) { await sb.from('events').delete().eq('id', e.id); loadAdmin(); loadEvents(); } };
-    return el('tr', {}, el('td', {textContent:e.title}), el('td', {textContent:e.event_date}), el('td', {textContent:e.published ? 'Ya' : 'Tidak'}),
-      el('td', {}, tog, ' ', del));
-  }));
-  $('admRegs').replaceChildren(...(rg.data || []).map(r =>
-    el('tr', {}, el('td', {textContent:r.events?.title || '-'}), el('td', {textContent:r.name}), el('td', {textContent:r.email}), el('td', {textContent:r.phone}), el('td', {textContent:r.tickets}))
-  ));
-}
-$('adminLink').onclick = e => { e.preventDefault(); showAdmin(); };
-$('loginForm').addEventListener('submit', async ev => {
-  ev.preventDefault();
-  const { error } = await sb.auth.signInWithPassword({ email: $('aEmail').value, password: $('aPass').value });
-  if (error) { $('loginMsg').className = 'msg err'; $('loginMsg').textContent = 'Email atau kata sandi salah.'; return; }
-  showAdmin();
-});
-$('logout').onclick = async () => { await sb.auth.signOut(); showAdmin(); };
-$('addForm').addEventListener('submit', async ev => {
-  ev.preventDefault();
-  const { error } = await sb.from('events').insert({
-    title: $('eTitle').value.trim(), category: $('eCat').value, event_date: $('eDate').value, location: $('eLoc').value.trim(),
-    price: +$('ePrice').value, quota: +$('eQuota').value, description: $('eDesc').value.trim(), published: true
-  });
-  const m = $('addMsg');
-  if (error) { m.className = 'msg err'; m.textContent = 'Gagal menyimpan acara.'; return; }
-  m.className = 'msg ok'; m.textContent = 'Acara tersimpan.'; $('addForm').reset(); loadAdmin(); loadEvents();
-});
-if (location.hash === '#admin') showAdmin();
-loadEvents();
+$("#yr").textContent=new Date().getFullYear();
+load();
 </script>
 </body>
 </html>
